@@ -40,7 +40,7 @@ RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}
   && rm -rf /sbin/tini.asc /root/.gnupg \
   && chmod +x /sbin/tini
 
-RUN apt-get update && apt-get install -y ansible golang-go packer \
+RUN apt-get update && apt-get install -y ansible awscli golang-go packer \
   && wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip \
   && unzip terraform_0.11.8_linux_amd64.zip \
   && mv terraform /usr/local/bin/ \
