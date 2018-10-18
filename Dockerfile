@@ -40,12 +40,13 @@ RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}
   && rm -rf /sbin/tini.asc /root/.gnupg \
   && chmod +x /sbin/tini
 
-RUN apt-get update && apt-get install -y ansible awscli golang-go build-essential \
+RUN apt-get update && apt-get install -y ansible awscli golang-go \
   && wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip \
   && unzip terraform_0.11.8_linux_amd64.zip \
   && mv terraform /usr/local/bin/ \
-  && mkdir -p $(go env GOPATH)/src/github.com/hashicorp && cd $_ \
-  && git clone https://github.com/hashicorp/packer.git && cd packer && make dev \
+  && wget https://releases.hashicorp.com/packer/1.3.1/packer_1.3.1_linux_amd64.zip \
+  && unzip packer_1.3.1_linux_amd64.zip \
+  && mv packer /usr/local/bin/ \
   && apt-get clean
 
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
