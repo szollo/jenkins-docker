@@ -40,6 +40,7 @@ RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}
   && rm -rf /sbin/tini.asc /root/.gnupg \
   && chmod +x /sbin/tini
 
+# Install custom software
 RUN apt-get update && apt-get install -y software-properties-common && apt-add-repository ppa:ansible/ansible -y && apt-get update \
   && apt-get install -y --allow-unauthenticated ansible awscli golang-go \
   && wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip \
@@ -48,6 +49,19 @@ RUN apt-get update && apt-get install -y software-properties-common && apt-add-r
   && wget https://releases.hashicorp.com/packer/1.3.1/packer_1.3.1_linux_amd64.zip \
   && unzip packer_1.3.1_linux_amd64.zip \
   && mv packer /usr/local/bin/ \
+  && apt-get clean
+
+# Install Docker
+RUN apt-get update \
+  && apt-get install -y \
+      apt-transport-https \
+      ca-certificates \
+      gnupg2 \
+  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+  && apt-key fingerprint 0EBFCD88 \
+  && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+  && apt-get update \
+  && apt-get install -y docker-ce \
   && apt-get clean
 
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
@@ -90,4 +104,4 @@ ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/jenkins.sh"]
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
 COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
-RUN /usr/local/bin/install-plugins.sh ansible packer terraform golang aws-credentials ssh-agent ansicolor
+RUN /usr/local/bin/install-plugins.sh ansible packer terraform golang aws-credentials ssh-agent docker-plugin ansicolor
